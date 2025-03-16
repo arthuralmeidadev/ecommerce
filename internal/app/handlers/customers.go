@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"ecommerce/internal/pkg/api"
+	"ecommerce/pkg/api"
 )
 
 func GetCustomers(ctx api.Context) {}

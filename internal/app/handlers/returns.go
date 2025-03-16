@@ -1,6 +1,6 @@
 package handlers
 
-import "ecommerce/internal/pkg/api"
+import "ecommerce/pkg/api"
 
 func GetReturnAppeals(ctx api.Context) {
 

@@ -1,6 +1,6 @@
 package handlers
 
-import "ecommerce/internal/pkg/api"
+import "ecommerce/pkg/api"
 
 func GetCampaigns(ctx api.Context) {}
 

@@ -7,6 +7,7 @@ import (
 )
 
 func getOrders(ctx api.Context) {
+	logger := &api.Logger{Context: "Orders"}
 	c := api.GetContainer()
 	var p test.TestProvider
 	if err := c.Inject(&p); err != nil {
@@ -15,7 +16,12 @@ func getOrders(ctx api.Context) {
 		return
 	}
 
-	p.Test()
+	logger.Info("Test")
+	logger.Warn("Test")
+	logger.Debug("Test")
+	logger.Success("Test")
+	logger.Error("Test")
+	logger.Fatal("Test")
 }
 
 func placeOrder(ctx api.Context) {}

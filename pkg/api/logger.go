@@ -89,9 +89,20 @@ func (l *Logger) print(color, msg, msgType string) {
 		b.WriteString(strings.Repeat(" ", 74-len(prefix)))
 	}
 
-	b.WriteString(color)
+	b.WriteString(strings.Replace(color, "9", "4", 1))
+	if msgType == "INFO" {
+		b.WriteString("\x1b[37m\x1b[1m ")
+	} else {
+		b.WriteString("\x1b[38;2;0;0;0m\x1b[1m ")
+	}
 	b.WriteString(msgType)
-	b.WriteString(": ")
+	b.WriteString(":")
+	if len(msgType) < 9 {
+		b.WriteString(strings.Repeat(" ", 9-len(msgType)))
+	}
+	b.WriteString("\x1b[0m")
+	b.WriteString(" ")
+	b.WriteString(color)
 	b.WriteString(msg)
 	b.WriteString("\x1b[0m\n")
 	fmt.Print(b.String())
@@ -135,6 +146,9 @@ func launch(msg string) {
 	if len(prefix) < 74 {
 		b.WriteString(strings.Repeat(" ", 74-len(prefix)))
 	}
+	b.WriteString("\x1b[46m\x1b[38;2;0;0;0m\x1b[1m LAUNCHED: ")
+	b.WriteString("\x1b[0m")
+	b.WriteString(" ")
 	b.WriteString("\x1b[96m")
 	b.WriteString(msg)
 	b.WriteString("\x1b[0m\n")

@@ -94,6 +94,6 @@ func (a *app) Listen(address string, port int) {
 			logger.Fatal(fmt.Sprintf("Coudn't start app: %v", err))
 		}
 	}()
-    launch(fmt.Sprintf("APP LAUNCHED: Listening on port %d.", port))
+    launch(fmt.Sprintf("App listening on port %d.", port))
 	<-ctlChan
 }

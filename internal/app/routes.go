@@ -1,4 +1,5 @@
 package app
+/*package app
 
 import (
 	"ecommerce/internal/app/handlers"
@@ -102,3 +103,4 @@ func MapRoutesToHandler() http.Handler {
 
     return r.Register()
 }
+*/

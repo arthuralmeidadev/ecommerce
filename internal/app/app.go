@@ -1,12 +1,14 @@
 package app
 
 import (
+	"ecommerce/internal/app/modules/orders"
 	"ecommerce/pkg/api"
 )
 
 func Run() {
 	port := 5000
-	handler := MapRoutesToHandler() 
-	server := api.NewServer("", port, handler)
-	server.Listen()
+	modules := make([]*api.Module, 0)
+	modules = append(modules, orders.NewOrdersModule())
+	app := api.NewApp(modules)
+	app.Listen("", port)
 }

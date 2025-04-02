@@ -25,17 +25,17 @@ func (r *route) next(ctx Context) {
 		return
 	}
 
-	if r.handlerIndex+1 < middlewareCount {
-		r.middlewares[r.handlerIndex](ctx)
+	if r.handlerIndex < middlewareCount-1 {
 		r.handlerIndex++
+		r.middlewares[r.handlerIndex](ctx)
 		return
 	}
 
 	r.handler(ctx)
 }
 
-func (r *route) UseMiddleware(ctxHandler ContextHandler) *route {
-	r.middlewares = append(r.middlewares, ctxHandler)
+func (r *route) UseMiddlewares(middlewares []ContextHandler) *route {
+	r.middlewares = middlewares
 	return r
 }
 

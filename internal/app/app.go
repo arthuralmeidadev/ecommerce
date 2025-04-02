@@ -11,11 +11,22 @@ func Run() {
 		orders.Module(),
 	}
 	app := deuterium.NewApp(modules)
-	app.Get("app-test").UseMiddleware(func(ctx deuterium.Context) {
-		deuterium.GetLogger().Success("MIDDLEWARE 1")
-        ctx.Next()
-	}).Register(func(ctx deuterium.Context) {
-		deuterium.GetLogger().Debug("TEST APP")
-	})
+	var middlewares []deuterium.ContextHandler
+	middlewares = append(
+		middlewares,
+		func(ctx deuterium.Context) {
+			deuterium.GetLogger().Debug("MIDDLEWARE 1")
+			ctx.Next()
+		},
+        func(ctx deuterium.Context) {
+			deuterium.GetLogger().Debug("MIDDLEWARE 2")
+			ctx.Next()
+        },
+	)
+	app.Get("app-test").UseMiddlewares(middlewares).Register(
+		func(ctx deuterium.Context) {
+			deuterium.GetLogger().Debug("TEST APP")
+		},
+	)
 	app.Listen("", port)
 }

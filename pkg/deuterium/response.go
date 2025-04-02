@@ -1,4 +1,4 @@
-package api
+package deuterium 
 
 import (
 	"encoding/json"

@@ -1,13 +1,17 @@
 package orders
 
 import (
-	"ecommerce/pkg/api"
+	"ecommerce/internal/app/modules/test"
+	"ecommerce/pkg/deuterium"
 )
 
-func NewOrdersModule() *api.Module {
-	return &api.Module{
-		Name:              "Orders",
-		ControllerFactory: &OrdersControllerFactory{},
-		Providers:         []any{&OrdersProvider{}},
+func Module() *deuterium.Module {
+	return &deuterium.Module{
+		Name: "Orders",
+		Imports: []*deuterium.Module{
+			test.Module(),
+		},
+		Controller: controller(),
+		Providers:  []any{&OrdersProvider{}},
 	}
 }

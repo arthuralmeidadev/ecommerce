@@ -1,4 +1,4 @@
-package api
+package deuterium 
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ type Container interface {
 }
 
 type container struct {
-	deps   map[reflect.Type]*any
+	deps   map[reflect.Type]any
 	mutex  sync.RWMutex
 	logger *Logger
 }
@@ -32,8 +32,8 @@ var singleContainer *container
 func GetContainer() Container {
 	onceContainer.Do(func() {
 		singleContainer = &container{
-			deps:   make(map[reflect.Type]*any),
-			logger: &Logger{Context: "Container"},
+			deps:   make(map[reflect.Type]any),
+			logger: &Logger{Context: "DeuteriumContainer"},
 		}
 	})
 
@@ -42,16 +42,18 @@ func GetContainer() Container {
 
 func (c *container) Inject(v any) error {
 	rv := reflect.ValueOf(v)
+
 	if rv.Kind() != reflect.Pointer || rv.Elem().Kind() != reflect.Struct {
 		t := rv.Type()
-		return fmt.Errorf("Cannot resolve dependency for type \"%s\".", t.Name())
+		reason := "The nethod [container.Inject] expects a pointer to a struct."
+		return fmt.Errorf("-> Cannot resolve dependency for type \"%s\":\n\t-> %s", t.Name(), reason)
 	}
 
 	t := rv.Elem().Type()
 
 	c.mutex.RLock()
 	if inst, exists := c.deps[t]; exists {
-		rv.Elem().Set(reflect.ValueOf(*inst).Elem())
+		rv.Elem().Set(reflect.ValueOf(inst))
 		c.mutex.RUnlock()
 		return nil
 	}
@@ -87,7 +89,7 @@ func (c *container) Inject(v any) error {
 		}
 	}
 	c.mutex.Lock()
-	c.deps[t] = &v
+	c.deps[t] = rv.Elem().Interface()
 	c.mutex.Unlock()
 
 	rv.Elem().Set(inst)

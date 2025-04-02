@@ -1,4 +1,4 @@
-package api
+package deuterium
 
 import (
 	"net/http"
@@ -12,6 +12,7 @@ type primitiveContext interface {
 type wrappedContext interface {
 	Request() *request
 	Response() *response
+	Next()
 }
 
 type Context interface {
@@ -20,8 +21,9 @@ type Context interface {
 }
 
 type context struct {
-	req *request
-	res *response
+	req   *request
+	res   *response
+	route *route
 }
 
 func (ctx *context) Request() *request {
@@ -30,6 +32,10 @@ func (ctx *context) Request() *request {
 
 func (ctx *context) Response() *response {
 	return ctx.res
+}
+
+func (ctx *context) Next() {
+	ctx.route.next(ctx)
 }
 
 func (ctx *context) HttpResponseWriter() http.ResponseWriter {

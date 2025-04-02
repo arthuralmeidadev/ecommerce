@@ -2,50 +2,36 @@ package orders
 
 import (
 	"ecommerce/internal/app/modules/test"
-	"ecommerce/pkg/api"
-	"log"
+	"ecommerce/pkg/deuterium"
 )
 
-func getOrders(ctx api.Context) {
-	logger := &api.Logger{Context: "Orders"}
-	c := api.GetContainer()
-	var p test.TestProvider
-	if err := c.Inject(&p); err != nil {
-		log.Printf("Error %v", err)
-		ctx.Response().InternalServerError("Internal Server Error")
-		return
-	}
+func controller() deuterium.Controller {
+	c := deuterium.NewController("/orders")
 
-	logger.Info("Test")
-	logger.Warn("Test")
-	logger.Debug("Test")
-	logger.Success("Test")
-	logger.Error("Test")
-	logger.Fatal("Test")
-}
+	// Get Orders
+	c.Get("/").Register(func(ctx deuterium.Context) {
+		logger := &deuterium.Logger{Context: "Orders"}
+		c := deuterium.GetContainer()
+		var p test.TestProvider
+		if err := c.Inject(&p); err != nil {
+			logger.Error(err.Error())
+			ctx.Response().InternalServerError("Internal Server Error")
+			return
+		}
+		p.Test()
+	})
 
-func placeOrder(ctx api.Context) {}
+	c.Post("/").Register(func(ctx deuterium.Context) {})
 
-func getOrder(ctx api.Context) {}
+	c.Get("/:id").Register(func(ctx deuterium.Context) {})
 
-func updateOrder(ctx api.Context) {}
+	c.Put("/:id").Register(func(ctx deuterium.Context) {})
 
-func approveOrder(ctx api.Context) {}
+	c.Post("/:id/approve").Register(func(ctx deuterium.Context) {})
 
-func denyOrder(ctx api.Context) {}
+	c.Post("/:id/deny").Register(func(ctx deuterium.Context) {})
 
-func cancelOrder(ctx api.Context) {}
+	c.Delete("/:id").Register(func(ctx deuterium.Context) {})
 
-type OrdersControllerFactory struct{}
-
-func (f *OrdersControllerFactory) Make() api.Controller {
-	c := api.NewController("/orders")
-	c.Get("/").Register(getOrders)
-	c.Post("/").Register(placeOrder)
-	c.Get("/:id").Register(getOrder)
-	c.Put("/:id").Register(updateOrder)
-	c.Post("/:id/approve").Register(approveOrder)
-	c.Post("/:id/deny").Register(denyOrder)
-	c.Delete("/:id").Register(cancelOrder)
 	return c
 }

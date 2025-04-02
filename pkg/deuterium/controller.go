@@ -1,4 +1,4 @@
-package api
+package deuterium 
 
 import (
 	"net/http"
@@ -11,7 +11,7 @@ type Controller interface {
 	Put(pattern string) *route
 	Patch(pattern string) *route
 	Delete(pattern string) *route
-	Register() []*route
+	register() []*route
 }
 
 type ControllerFactory interface {
@@ -75,6 +75,6 @@ func (c *controller) Delete(pattern string) *route {
 	return r
 }
 
-func (c *controller) Register() []*route {
+func (c *controller) register() []*route {
 	return c.routes
 }

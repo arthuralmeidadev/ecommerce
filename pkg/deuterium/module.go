@@ -1,20 +1,23 @@
-package api
+package deuterium
 
 import "fmt"
 
+type ModuleFactory interface {
+	Make() *Module
+}
+
 type Module struct {
-	Name              string
-	Imports           []*Module
-	ControllerFactory ControllerFactory
-	Providers         []any
+	Name       string
+	Imports    []*Module
+	Controller Controller
+	Providers  []any
 }
 
 func (m *Module) Register() ([]*route, []any) {
 	logger := GetLogger()
 	var routes []*route
-	if m.ControllerFactory != nil {
-		controller := m.ControllerFactory.Make()
-		routes = controller.Register()
+	if m.Controller != nil {
+		routes = m.Controller.register()
 		logger.Success(fmt.Sprintf("%s controller successfully registered", m.Name))
 	}
 

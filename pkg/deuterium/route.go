@@ -1,4 +1,4 @@
-package api
+package deuterium
 
 import (
 	"fmt"
@@ -13,7 +13,30 @@ type route struct {
 	pattern      string
 	regexPattern regexp.Regexp
 	registered   bool
+	middlewares  []ContextHandler
+	handlerIndex int
 	handler      ContextHandler
+}
+
+func (r *route) next(ctx Context) {
+	middlewareCount := len(r.middlewares)
+
+	if middlewareCount == 0 {
+		return
+	}
+
+	if r.handlerIndex+1 < middlewareCount {
+		r.middlewares[r.handlerIndex](ctx)
+		r.handlerIndex++
+		return
+	}
+
+	r.handler(ctx)
+}
+
+func (r *route) UseMiddleware(ctxHandler ContextHandler) *route {
+	r.middlewares = append(r.middlewares, ctxHandler)
+	return r
 }
 
 func (r *route) Register(ctxHandler ContextHandler) {

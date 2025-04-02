@@ -1,10 +1,10 @@
 package test
 
-import "ecommerce/pkg/api"
+import "ecommerce/pkg/deuterium"
 
-func NewTestModule() *api.Module {
-	return &api.Module{
+func Module() *deuterium.Module {
+	return &deuterium.Module{
 		Name:      "Test",
-        Providers: []any{&TestProvider{ v: "test"}},
+		Providers: []any{&TestProvider{v: "test"}},
 	}
 }

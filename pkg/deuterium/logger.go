@@ -1,4 +1,4 @@
-package api
+package deuterium
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ var singleLogger *Logger
 func GetLogger() *Logger {
 	onceLogger.Do(func() {
 		singleLogger = &Logger{
-			Context: "Application",
+			Context: "DeuteriumApp",
 		}
 	})
 
@@ -53,7 +53,7 @@ func (l *Logger) Fatal(msg string) {
 func (l *Logger) print(color, msg, msgType string) {
 	t := time.Now()
 	b := &strings.Builder{}
-	b.WriteString("\x1b[97m[\x1b[93m")
+	b.WriteString("\x1b[0m[\x1b[96m")
 	b.WriteString(t.Format(time.DateOnly))
 
 	var h, period string
@@ -81,19 +81,19 @@ func (l *Logger) print(color, msg, msgType string) {
 	}
 
 	b.WriteString(fmt.Sprintf(" %s:%s:%s %s", h, m, s, period))
-	b.WriteString("\x1b[97m] [\x1b[93m")
+	b.WriteString("\x1b[0m] [\x1b[96m")
 	b.WriteString(l.Context)
-	b.WriteString("\x1b[97m]\x1b[0m ")
+	b.WriteString("\x1b[0m] ")
 	prefix := b.String()
-	if len(prefix) < 74 {
-		b.WriteString(strings.Repeat(" ", 74-len(prefix)))
+	if len(prefix) < 67 {
+		b.WriteString(strings.Repeat(" ", 67-len(prefix)))
 	}
 
-	b.WriteString(strings.Replace(color, "9", "4", 1))
+	b.WriteString(color)
 	if msgType == "INFO" {
 		b.WriteString("\x1b[37m\x1b[1m ")
 	} else {
-		b.WriteString("\x1b[38;2;0;0;0m\x1b[1m ")
+		b.WriteString("\x1b[7m\x1b[1m ")
 	}
 	b.WriteString(msgType)
 	b.WriteString(":")
@@ -111,7 +111,7 @@ func (l *Logger) print(color, msg, msgType string) {
 func launch(msg string) {
 	t := time.Now()
 	b := &strings.Builder{}
-	b.WriteString("\x1b[97m[\x1b[93m")
+	b.WriteString("\x1b[0m[\x1b[96m")
 	b.WriteString(t.Format(time.DateOnly))
 
 	var h, period string
@@ -139,14 +139,14 @@ func launch(msg string) {
 	}
 
 	b.WriteString(fmt.Sprintf(" %s:%s:%s %s", h, m, s, period))
-	b.WriteString("\x1b[97m] [\x1b[93m")
-	b.WriteString("Application")
-	b.WriteString("\x1b[97m]\x1b[0m ")
+	b.WriteString("\x1b[0m] [\x1b[96m")
+	b.WriteString("DeuteriumApp")
+	b.WriteString("\x1b[0m] ")
 	prefix := b.String()
-	if len(prefix) < 74 {
-		b.WriteString(strings.Repeat(" ", 74-len(prefix)))
+	if len(prefix) < 67 {
+		b.WriteString(strings.Repeat(" ", 67-len(prefix)))
 	}
-	b.WriteString("\x1b[46m\x1b[38;2;0;0;0m\x1b[1m LAUNCHED: ")
+	b.WriteString("\x1b[96m\x1b[7m\x1b[1m LAUNCHED: ")
 	b.WriteString("\x1b[0m")
 	b.WriteString(" ")
 	b.WriteString("\x1b[96m")

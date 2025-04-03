@@ -8,7 +8,9 @@ func controller() deuterium.Controller {
 	c := deuterium.NewController("/orders")
 
 	// Get Orders
-	c.Get("/").Register(func(ctx deuterium.Context) {})
+	c.Get("/").Register(func(ctx deuterium.Context) {
+		deuterium.GetLogger().Debug("GET ORDERS")
+	})
 
 	// Place Order
 	c.Post("/").Register(func(ctx deuterium.Context) {})

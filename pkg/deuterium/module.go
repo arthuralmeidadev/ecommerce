@@ -16,9 +16,17 @@ type Module struct {
 func (m *Module) Register() ([]*route, []any) {
 	logger := GetLogger()
 	var routes []*route
+	var middlewares []ContextHandler
 	if m.Controller != nil {
-		routes = m.Controller.register()
+		routes, middlewares = m.Controller.register()
 		logger.Success(fmt.Sprintf("%s controller successfully registered", m.Name))
+	}
+
+	for i := 0; i < len(routes); i++ {
+		var routeMiddlewares []ContextHandler
+		routeMiddlewares = append(routeMiddlewares, middlewares...)
+		routeMiddlewares = append(routeMiddlewares, routes[i].middlewares...)
+		routes[i].middlewares = routeMiddlewares
 	}
 
 	providers := m.Providers

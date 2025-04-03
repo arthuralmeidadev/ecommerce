@@ -1,4 +1,4 @@
-package deuterium 
+package deuterium
 
 import (
 	"net/http"
@@ -11,7 +11,8 @@ type Controller interface {
 	Put(pattern string) *route
 	Patch(pattern string) *route
 	Delete(pattern string) *route
-	register() []*route
+	Use(handler ContextHandler)
+	register() ([]*route, []ContextHandler)
 }
 
 type ControllerFactory interface {
@@ -19,8 +20,10 @@ type ControllerFactory interface {
 }
 
 type controller struct {
-	baseRoute string
-	routes    []*route
+	baseRoute    string
+	routes       []*route
+	middlewares  []ContextHandler
+	handlerIndex int
 }
 
 func NewController(baseRoute string) Controller {
@@ -75,6 +78,10 @@ func (c *controller) Delete(pattern string) *route {
 	return r
 }
 
-func (c *controller) register() []*route {
-	return c.routes
+func (c *controller) Use(handler ContextHandler) {
+	c.middlewares = append(c.middlewares, handler)
+}
+
+func (c *controller) register() ([]*route, []ContextHandler) {
+	return c.routes, c.middlewares
 }

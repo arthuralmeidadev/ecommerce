@@ -19,8 +19,10 @@ func appendRoutes(allRoutes *[]*route, routes []*route, logger *Logger) {
 }
 
 type app struct {
-	modules []*Module
-	routes  []*route
+	modules      []*Module
+	routes       []*route
+	middlewares  []ContextHandler
+	handlerIndex int
 }
 
 func NewApp(modules []*Module) *app {
@@ -75,6 +77,26 @@ func (a *app) Delete(pattern string) *route {
 	return r
 }
 
+func (a *app) Use(handler ContextHandler) {
+	a.middlewares = append(a.middlewares, handler)
+}
+
+func (a *app) next(ctx Context) {
+	middlewareCount := len(a.middlewares)
+
+	if middlewareCount == 0 {
+		return
+	}
+
+	if a.handlerIndex < middlewareCount-1 {
+		a.handlerIndex++
+		a.middlewares[a.handlerIndex](ctx)
+		return
+	}
+
+	return
+}
+
 func (a *app) register() http.Handler {
 	logger := GetLogger()
 	allRoutes := a.routes
@@ -106,6 +128,14 @@ func (a *app) register() http.Handler {
 			return
 		}
 
+		if len(a.middlewares) > 0 {
+			a.middlewares[0](&context{
+				req: &request{r, nil},
+				res: &response{w},
+				app: a,
+			})
+		}
+
 		var match *route
 		for i := 0; i < len(allRoutes); i++ {
 			route := allRoutes[i]
@@ -131,6 +161,7 @@ func (a *app) register() http.Handler {
 		ctx := &context{
 			req:   &request{r, reqPathParams},
 			res:   &response{w},
+			app:   a,
 			route: match,
 		}
 

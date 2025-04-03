@@ -34,8 +34,8 @@ func (r *route) next(ctx Context) {
 	r.handler(ctx)
 }
 
-func (r *route) UseMiddlewares(middlewares []ContextHandler) *route {
-	r.middlewares = middlewares
+func (r *route) Use(handler ContextHandler) *route {
+	r.middlewares = append(r.middlewares, handler)
 	return r
 }
 

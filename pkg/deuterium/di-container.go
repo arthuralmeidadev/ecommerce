@@ -45,7 +45,7 @@ func (c *container) Inject(v any) error {
 
 	if rv.Kind() != reflect.Pointer || rv.Elem().Kind() != reflect.Struct {
 		t := rv.Type()
-		reason := "The nethod [container.Inject] expects a pointer to a struct."
+		reason := "The method [container.Inject] expects a pointer to a struct."
 		return fmt.Errorf("-> Cannot resolve dependency for type \"%s\":\n\t-> %s", t.Name(), reason)
 	}
 

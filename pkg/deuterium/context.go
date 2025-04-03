@@ -23,6 +23,7 @@ type Context interface {
 type context struct {
 	req   *request
 	res   *response
+	app   *app
 	route *route
 }
 
@@ -35,7 +36,10 @@ func (ctx *context) Response() *response {
 }
 
 func (ctx *context) Next() {
-	ctx.route.next(ctx)
+	if ctx.route != nil {
+		ctx.route.next(ctx)
+	}
+	ctx.app.next(ctx)
 }
 
 func (ctx *context) HttpResponseWriter() http.ResponseWriter {

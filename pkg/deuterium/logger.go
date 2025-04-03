@@ -85,8 +85,8 @@ func (l *Logger) print(color, msg, msgType string) {
 	b.WriteString(l.Context)
 	b.WriteString("\x1b[0m] ")
 	prefix := b.String()
-	if len(prefix) < 67 {
-		b.WriteString(strings.Repeat(" ", 67-len(prefix)))
+	if len(prefix) < 68 {
+		b.WriteString(strings.Repeat(" ", 68-len(prefix)))
 	}
 
 	b.WriteString(color)
@@ -143,8 +143,8 @@ func launch(msg string) {
 	b.WriteString("DeuteriumApp")
 	b.WriteString("\x1b[0m] ")
 	prefix := b.String()
-	if len(prefix) < 67 {
-		b.WriteString(strings.Repeat(" ", 67-len(prefix)))
+	if len(prefix) < 68 {
+		b.WriteString(strings.Repeat(" ", 68-len(prefix)))
 	}
 	b.WriteString("\x1b[96m\x1b[7m\x1b[1m LAUNCHED: ")
 	b.WriteString("\x1b[0m")

@@ -42,12 +42,20 @@ type request struct {
 	reqPathParams map[string]string
 }
 
-func (req *request) Header(name string) string {
-	return req.r.Header.Get(name)
+func (req *request) GetHeader(key string) string {
+	return req.r.Header.Get(key)
 }
 
-func (req *request) Cookie(name string) (*http.Cookie, error) {
+func (req *request) SetHeader(key, value string) {
+	req.r.Header.Set(key, value)
+}
+
+func (req *request) GetCookie(name string) (*http.Cookie, error) {
 	return req.r.Cookie(name)
+}
+
+func (req *request) SetCookie(c *http.Cookie) {
+	req.r.AddCookie(c)
 }
 
 func (req *request) PathParam(name string) *PathParam {

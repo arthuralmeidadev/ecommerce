@@ -1,6 +1,6 @@
-package dto
+package orders
 
-type OrderRequestDTO struct {
+type OrderPlacement struct {
 	Id                 string
 	StoreId            string
 	CompanyId          string

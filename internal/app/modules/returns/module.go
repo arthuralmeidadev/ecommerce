@@ -1,10 +1,10 @@
-package orders
+package returns
 
 import "ecommerce/pkg/deuterium"
 
 func Module() *deuterium.Module {
 	return &deuterium.Module{
-		Name:       "Orders",
+		Name:       "Returns",
 		Controller: controller(),
 	}
 }

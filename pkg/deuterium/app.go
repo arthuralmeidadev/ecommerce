@@ -1,8 +1,11 @@
 package deuterium
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -19,12 +22,15 @@ func appendRoutes(allRoutes *[]*route, routes []*route, logger *Logger) {
 }
 
 type app struct {
-	modules      []*Module
-	routes       []*route
-	middlewares  []ContextHandler
-	handlerIndex int
+	name, version, description, author string
+	modules                            []*Module
+	routes                             []*route
+	middlewares                        []ContextHandler
+	handlerIndex                       int
 }
 
+// Creates a new Deuterium Application with the
+// specified modules.
 func NewApp(modules []*Module) *app {
 	return &app{
 		modules: modules,
@@ -32,6 +38,32 @@ func NewApp(modules []*Module) *app {
 	}
 }
 
+// Sets the name for the Deuterium Application
+func (a *app) SetName(name string) {
+	a.name = name
+}
+
+// Sets the verstion for the Deuterium Application
+func (a *app) SetVersion(major, minor, build int) {
+	builder := strings.Builder{}
+	builder.WriteString("v")
+	builder.WriteString(strconv.Itoa(major))
+	builder.WriteString(".")
+	builder.WriteString(strconv.Itoa(minor))
+	builder.WriteString(".")
+	builder.WriteString(strconv.Itoa(build))
+
+	a.version = builder.String()
+}
+
+// Sets the description for the Deuterium Application
+func (a *app) SetDescription(desc string) {
+	a.description = desc
+}
+
+// Handles a GET request to the specified pattern and
+// returns a pointer to a [route] instance that will
+// be used to attach the endpoint handler.
 func (a *app) Get(pattern string) *route {
 	r := &route{
 		method:  http.MethodGet,
@@ -41,6 +73,9 @@ func (a *app) Get(pattern string) *route {
 	return r
 }
 
+// Handles a POST request to the specified pattern and
+// returns a pointer to a [route] instance that will
+// be used to attach the endpoint handler.
 func (a *app) Post(pattern string) *route {
 	r := &route{
 		method:  http.MethodPost,
@@ -50,6 +85,9 @@ func (a *app) Post(pattern string) *route {
 	return r
 }
 
+// Handles a PUT request to the specified pattern and
+// returns a pointer to a [route] instance that will
+// be used to attach the endpoint handler.
 func (a *app) Put(pattern string) *route {
 	r := &route{
 		method:  http.MethodPut,
@@ -59,6 +97,9 @@ func (a *app) Put(pattern string) *route {
 	return r
 }
 
+// Handles a PATCH request to the specified pattern and
+// returns a pointer to a [route] instance that will
+// be used to attach the endpoint handler.
 func (a *app) Patch(pattern string) *route {
 	r := &route{
 		method:  http.MethodPut,
@@ -68,6 +109,9 @@ func (a *app) Patch(pattern string) *route {
 	return r
 }
 
+// Handles a DELETE request to the specified pattern and
+// returns a pointer to a [route] instance that will
+// be used to attach the endpoint handler.
 func (a *app) Delete(pattern string) *route {
 	r := &route{
 		method:  http.MethodDelete,
@@ -77,8 +121,15 @@ func (a *app) Delete(pattern string) *route {
 	return r
 }
 
+// Takes a [ContextHandler] handler function which will
+// be appended to the queue of middleware handlers for this application.
+// To call the next handler, use [Context.Next()].
 func (a *app) Use(handler ContextHandler) {
 	a.middlewares = append(a.middlewares, handler)
+}
+
+func (a *app) ConfigureCors(cfg CorsConfig) {
+
 }
 
 func (a *app) next(ctx Context) {
@@ -134,15 +185,36 @@ func (a *app) register() http.Handler {
 				res: &response{w},
 				app: a,
 			})
+
+			if a.handlerIndex < len(a.middlewares)-1 {
+				return
+			}
 		}
 
+		var apiDocsEndpoints []string
 		var match *route
 		for i := 0; i < len(allRoutes); i++ {
 			route := allRoutes[i]
+			apiDocsEndpoints = append(apiDocsEndpoints, route.method+" "+route.pattern)
 			matches := route.regexPattern.MatchString(r.URL.Path)
 			if matches && route.method == r.Method {
 				match = route
 			}
+		}
+
+		if regexp.MustCompile(`api\-docs\/*`).MatchString(r.URL.Path) {
+			bytes, _ := json.Marshal(struct {
+				AppName   string   `json:"App Name"`
+				Version   string   `json:"Version"`
+				Endpoints []string `json:"Endpoints"`
+			}{
+				AppName:   a.name,
+				Version:   a.version,
+				Endpoints: apiDocsEndpoints,
+			})
+
+			w.Write(bytes)
+			return
 		}
 
 		if match == nil {

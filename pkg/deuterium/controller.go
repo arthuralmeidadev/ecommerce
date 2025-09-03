@@ -6,17 +6,36 @@ import (
 )
 
 type Controller interface {
+	// Handles a GET request to the specified pattern and
+	// returns a pointer to a [route] instance that will
+	// be used to attach the endpoint handler.
 	Get(pattern string) *route
+
+	// Handles a POST request to the specified pattern and
+	// returns a pointer to a [route] instance that will
+	// be used to attach the endpoint handler.
 	Post(pattern string) *route
+
+	// Handles a PUT request to the specified pattern and
+	// returns a pointer to a [route] instance that will
+	// be used to attach the endpoint handler.
 	Put(pattern string) *route
+
+	// Handles a PATCH request to the specified pattern and
+	// returns a pointer to a [route] instance that will
+	// be used to attach the endpoint handler.
 	Patch(pattern string) *route
+
+	// Handles a DELETE request to the specified pattern and
+	// returns a pointer to a [route] instance that will
+	// be used to attach the endpoint handler.
 	Delete(pattern string) *route
+
+	// Takes a [ContextHandler] handler function which will
+	// be appended to the queue of middleware handlers for this route.
+	// To call the next handler, use [Context.Next()].
 	Use(handler ContextHandler)
 	register() ([]*route, []ContextHandler)
-}
-
-type ControllerFactory interface {
-	Make() Controller
 }
 
 type controller struct {
@@ -26,6 +45,8 @@ type controller struct {
 	handlerIndex int
 }
 
+// Creates a new struct that implements [Controller]
+// associated with the base route.
 func NewController(baseRoute string) Controller {
 	return &controller{
 		baseRoute: strings.TrimSuffix(strings.TrimPrefix(baseRoute, "/"), "/"),

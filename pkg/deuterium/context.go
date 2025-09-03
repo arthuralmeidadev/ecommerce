@@ -1,8 +1,6 @@
 package deuterium
 
-import (
-	"net/http"
-)
+import "net/http"
 
 type primitiveContext interface {
 	HttpResponseWriter() http.ResponseWriter

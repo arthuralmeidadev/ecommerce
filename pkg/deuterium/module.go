@@ -19,6 +19,9 @@ func (m *Module) Register() ([]*route, []any) {
 	var middlewares []ContextHandler
 	if m.Controller != nil {
 		routes, middlewares = m.Controller.register()
+		if m.Name == "" {
+			m.Name = "\"Unnamed\""
+		}
 		logger.Success(fmt.Sprintf("%s controller successfully registered", m.Name))
 	}
 
@@ -34,6 +37,9 @@ func (m *Module) Register() ([]*route, []any) {
 		providers = append(providers, m.Imports[i].Providers...)
 	}
 
+	if m.Name == "" {
+		m.Name = "\"Unnamed\""
+	}
 	logger.Success(fmt.Sprintf("%s module successfully registered", m.Name))
 	return routes, providers
 }

@@ -1,10 +1,10 @@
-package test
+package campaigns
 
 import "ecommerce/pkg/deuterium"
 
 func Module() *deuterium.Module {
 	return &deuterium.Module{
-		Name:      "Test",
-		Providers: []any{&TestProvider{v: "test"}},
+		Name:       "Campaigns",
+		Controller: controller(),
 	}
 }

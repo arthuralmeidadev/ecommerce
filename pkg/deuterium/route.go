@@ -21,7 +21,7 @@ type route struct {
 func (r *route) next(ctx Context) {
 	middlewareCount := len(r.middlewares)
 
-	if middlewareCount == 0 {
+	if middlewareCount == 0 || r.handlerIndex > middlewareCount-1 {
 		return
 	}
 
@@ -31,15 +31,22 @@ func (r *route) next(ctx Context) {
 		return
 	}
 
+	r.handlerIndex++
 	r.handler(ctx)
 }
 
+// Takes a [ContextHandler] handler function which will
+// be appended to the queue of middleware handlers for this route.
+// To call the next handler, use [Context.Next()].
 func (r *route) Use(handler ContextHandler) *route {
 	r.middlewares = append(r.middlewares, handler)
 	return r
 }
 
-func (r *route) Register(ctxHandler ContextHandler) {
+// Takes a [ContextHandler] handler function as the main
+// endpoint handler. This method needs to be called, otherwise
+// the endpoint will be listed as unregistered.
+func (r *route) Register(handler ContextHandler) {
 	segments := strings.Split(r.pattern, "/")
 	var builder strings.Builder
 	builder.WriteString(`^`)
@@ -54,7 +61,7 @@ func (r *route) Register(ctxHandler ContextHandler) {
 	}
 
 	builder.WriteString(`\/?`)
-	r.handler = ctxHandler
+	r.handler = handler
 	r.registered = true
 	r.regexPattern = *regexp.MustCompile(builder.String())
 	logger := GetLogger()

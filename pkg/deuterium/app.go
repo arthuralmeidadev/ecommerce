@@ -258,6 +258,12 @@ func (a *app) Listen(addr string, port int) {
 			logger.Fatal(fmt.Sprintf("Coudn't start app: %v", err))
 		}
 	}()
-	launch(fmt.Sprintf("App listening on port %d.", port))
+
+	addrPath := addr
+	if len(addr) == 0 {
+		addrPath = "http://localhost"
+	}
+
+	launch(fmt.Sprintf("App listening on port %d. Navigate to %s:%d/api-docs for documentation.", port, addrPath, port))
 	<-ctlChan
 }
